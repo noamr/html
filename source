@@ -2483,6 +2483,7 @@ a.setAttribute('href', 'https://example.com/'); // change the content attribute 
      <li>`<dfn data-x-href="https://fetch.spec.whatwg.org/#http-cross-origin-resource-policy"><code>Cross-Origin-Resource-Policy</code></dfn>` header</li>
      <li><dfn data-x-href="https://fetch.spec.whatwg.org/#process-response">process response</dfn></li>
      <li><dfn data-x-href="https://fetch.spec.whatwg.org/#concept-header-list-get-structured-header">getting a structured field value</dfn></li>
+     <li><dfn data-x="concept-header-list" data-x-href="https://fetch.spec.whatwg.org/#concept-header-list">header list</dfn></li>
      <li><dfn data-x="concept-header-list-set" data-x-href="https://fetch.spec.whatwg.org/#concept-header-list-set">set</dfn></li>
      <li><dfn data-x="concept-header-list-get-decode-split" data-x-href="https://fetch.spec.whatwg.org/#concept-header-list-get-decode-split">get, decode, and split</dfn></li>
      <li><dfn data-x="concept-fetch-terminate" data-x-href="https://fetch.spec.whatwg.org/#concept-fetch-terminate">terminate</dfn></li>
@@ -3939,6 +3940,8 @@ a.setAttribute('href', 'https://example.com/'); // change the content attribute 
      <li>The <dfn data-x-href="https://w3c.github.io/webappsec-csp/#should-block-inline">Should element's inline behavior be blocked by Content Security Policy?</dfn> algorithm</li>
      <li>The <dfn data-x-href="https://w3c.github.io/webappsec-csp/#should-block-navigation-request">Should navigation request of type be blocked by Content Security Policy?</dfn> algorithm</li>
      <li>The <dfn data-x-href="https://w3c.github.io/webappsec-csp/#should-block-navigation-response">Should navigation response to navigation request of type in target be blocked by Content Security Policy?</dfn> algorithm</li>
+     <li>The <dfn data-x-href="https://w3c.github.io/webappsec-csp/#should-block-request">Should request be blocked by Content Security Policy?</dfn> algorithm</li>
+     <li>The <dfn data-x-href="https://w3c.github.io/webappsec-csp/#should-block-response">Should response to request be blocked by Content Security Policy?</dfn> algorithm</li>
      <li>The <dfn data-x-href="https://w3c.github.io/webappsec-csp/#report-uri"><code data-x="">report-uri</code> directive</dfn></li>
      <li>The <dfn data-x="csp-EnsureCSPDoesNotBlockStringCompilation" data-x-href="https://w3c.github.io/webappsec-csp/#can-compile-strings">EnsureCSPDoesNotBlockStringCompilation</dfn> abstract operation</li>
      <li>The <dfn data-x-href="https://w3c.github.io/webappsec-csp/#allow-base-for-document">Is base allowed for Document?</dfn> algorithm</li>
@@ -14242,11 +14245,12 @@ interface <dfn interface>HTMLLinkElement</dfn> : <span>HTMLElement</span> {
 
   <h5>Processing `<code data-x="http-link">Link</code>` headers</h5>
 
-  <p>To <dfn>process link headers</dfn> given a <code>Document</code> <var>doc</var>,
-  a <span data-x="concept-response">response</span> <var>response</var>, and a
-  "<code data-x="">pre-media</code>" or "<code data-x="">media</code>" <var>phase</var>:</p>
+  <p>To <dfn>extract links from headers</dfn> given
+  <span data-x="concept-header-list">header list</span> <var>headers</var>:</p>
 
   <ol>
+   <li><p>Let <var>links</var> be a new <span>list</span>.</p></li>
+
    <li><p>Let <var>rawLinkHeaders</var> be the result of <span
    data-x="concept-header-list-get-decode-split">getting, decoding, and splitting</span>
    `<code>Link</code>` from <var>response</var>'s <span
@@ -14258,8 +14262,8 @@ interface <dfn interface>HTMLLinkElement</dfn> : <span>HTMLElement</span> {
 
     <ol>
      <li><p>Let <var>linkObject</var> be the result of
-     <span data-x="parsing a link header value">parsing</span>
-     <var>linkHeader</var>. <ref spec=WEBLINK></p></li>
+     <span data-x="parsing a link header value">parsing</span> <var>linkHeader</var>.
+     <ref spec=WEBLINK></p></li>
 
      <li>
       <p>If <var>linkObject</var>["<code data-x="">relation_type</code>"] is not
@@ -14268,6 +14272,174 @@ interface <dfn interface>HTMLLinkElement</dfn> : <span>HTMLElement</span> {
       <p class="note">Support for additional link types can be added here in the future.</p>
      </li>
 
+     <li><p>If <var>linkObject</var>["<code data-x="">target_uri</code>"] does not
+     <span data-x="map exists">exist</span>, then <span>continue</span>.</p></li>
+
+     <li><p><span data-x="list append">Append</span> <var>linkObject</var> to
+     <var>links</var>.</p></li>
+    </ol>
+   </li>
+   <li><p>Return <var>links</var>.</p></li>
+  </ol>
+
+  <p>To <dfn>process early hint headers</dfn> given a
+  <span data-x="concept-response">response</span> <var>response</var> and an
+  <span>environment</span> <var>reservedEnvironment</var>:</p>
+
+  <ol>
+   <li><p>Let <var>earlyPolicyContainer</var> be the result of <span>creating a
+   policy container from a fetch response</span> given <var>response</var> and
+   <var>reservedEnvironment</var>.</p></li>
+
+   <li><p>Let <var>links</var> be the result of
+   <span data-x="extract links from headers">extracting links</span> from
+   <var>response</var>'s <span data-x="concept-response-header-list">header list</span>.</p></li>
+
+   <li><p>Let <var>uncommittedPreloads</var> be an empty <span>list</span>.</p></li>
+
+   <li>
+    <p><span data-x="list iterate">For each</span> <var>linkObject</var> in <var>links</var>:</p>
+
+    <ol>
+     <li><p>Let <var>attribs</var> be
+     <var>linkObject</var>["<code data-x="">target_attributes</code>"].</p></li>
+
+     <li><p>Let <var>destination</var> be
+     <var>attrib</var>["<code data-x="">as</code>"].</p></li>
+
+     <li><p>Let <var>crossorigin</var> be
+     <var>attrib</var>["<code data-x="">crossorigin</code>"] if
+     <var>attrib</var>["<code data-x="">crossorigin</code>"]
+     <span data-x="map exists">exists</span>, or the empty string otherwise.</p></li>
+
+     <li><p>Let <var>destination</var> is not a
+     <span data-x="concept-request-destination">destination</span>, <span>continue</span>.</p></li>
+
+     <li><p>Let <var>url</var> be the result of <span data-x="parse a url">parsing</span>
+     <var>linkObject</var>[<code data-x="">target_uri</code>"] relative to <var>response</var>'s
+     <span data-x="concept-response-url">URL</span>.</p></li>
+
+     <li><p>Let <var>earlyRequest</var> be the result of
+     <span data-x="create a potential-CORS request">creating a potential-CORS request</span> given
+     <var>url</var>, <var>destination</var>, and <var>crossorigin</var>.</p></li>
+
+     <li><p>Set <var>earlyRequest</var>'s
+     <span data-x="concept-request-policy-container">policy container</span> to
+     <var>earlyPolicyContainer</var>.</p></li>
+
+     <li><p>If <var>attrib</var>["<code data-x="">integrity</code>"]
+     <span data-x="map exists">exists</span>, then set <var>earlyRequest</var>'s
+     <span data-x="concept-request-integrity-metadata">integrity metadata</span> to
+     <var>attrib</var>["<code data-x="">integrity</code>"].</p></li>
+
+     <li><p>Let <var>unsafeEndTime</var> be 0.</p></li>
+
+     <li><p>Let <var>earlyResponse</var> be null.</p></li>
+
+     <li><p>Let <var>processResponse</var> given <span data-x="concept-response">response</span>
+     <var>res</var> be to set <var>earlyResponse</var> to <var>res</var>.</p></li>
+
+     <li>
+      <p><span data-x="list append">Append</span> the following steps given <code>Document</code>
+      <var>document</var> to <var>uncommittedPreloads</var>:</p>
+
+      <ol>
+       <li><p>Let <var>potentialRequest</var> be a new
+       <span data-x="concept-request">request</span>, whose
+       <span data-x="concept-request-client">client</span> is <var>document</var>'s
+       <span>relevant settings object</span>,
+       <span data-x="concept-request-url">URL</span> is <var>earlyRequest</var>'s
+       <span data-x="concept-request-url">URL</span>,
+       <span data-x="concept-request-destination">destination</span> is <var>earlyRequest</var>'s
+       <span data-x="concept-request-destination">destination</span>,
+       <span data-x="concept-request-integrity-metadata">integrity metadata</span> is
+       <var>request</var>'s
+       <span data-x="concept-request-integrity-metadata">integrity metadata</span>,
+       <span data-x="concept-request-mode">mode</span> is <var>earlyRequest</var>'s
+       <span data-x="concept-request-mode">mode</span>, and
+       <span data-x="concept-request-credentials-mode">credentials mode</span> is
+       <var>request</var>'s
+       <span data-x="concept-request-credentials-mode">credentials mode</span>.</p></li>
+
+       <li><p>If <var>potentialRequest</var>
+       <span data-x="Should request be blocked by Content Security Policy?">should be blocked by
+       Content Security Policy</span>, then abort these steps.<p></li>
+
+       <li><p>Let <var>entry</var> be new <span>preload entry</span> whose
+       <span data-x="preload response">response</span>.</p></li>
+
+       <li>
+        <p>Let <var>verifyAndReport</var> be the following steps given
+        <span data-x="concept-response">response</span> <var>response</var>:</p>
+
+        <ol>
+         <li>
+          <p>If the result of checking if
+          <span data-x="Should response to request be blocked by Content Security Policy?">a
+          response should be blocked be Content Security Policy</span> given
+          <var>potentialRequest</var> and <var>response</var> returns false, then:</p>
+
+          <ol>
+           <li><p><span data-x="">Report timing for origin</span> given
+           <var>response</var>, <var>document</var>'s <span>relevant global object</span>,
+           "<code data-x="">early-hint</code>", and <var>unsafeEndTime</var>.</p></li>
+
+           <li><p>If <var>entry</var>'s <span data-x="preload on response available">on response
+           available</span> is null, then set <var>entry</var>'s
+           <span data-x="preload response">response</span> to <var>response</var>; otherwise call
+           <var>entry</var>'s
+           <span data-x="preload on response available">on response available</span> given
+           <var>response</var>.</p></li>
+          </ol>
+         </li>
+
+         <li><p>Let <var>preloadedResources</var> be <var>document</var>'s
+         <span>map of preloaded resources</span>.</p></li>
+
+         <li><p>Let <var>key</var> be the result of
+         <span data-x="create a preload key">creating a preload key</span> given
+         <var>earlyRequest</var>.</p></li>
+
+         <li><p>If <var>preloadedResources</var>[<var>key</var>]
+         <span data-x="map exists">exists</span>, then set
+         <var>preloadedResources</var>[<var>key</var>]'s
+         <span data-x="preload response">response</span> to <var>response</var>; otherwise,
+         <span data-x="map set">set</span> <var>preloadedResources</var>[<var>key</var>] to a new
+         <span>preload entry</span> whose <span data-x="preload response">response</span> is
+         <var>response</var>.</p></li>
+        </ol>
+       </li>
+
+       <li><p>If <var>earlyResponse</var> is null, then set <var>processResponse</var> to
+       <var>verifyAndReport</var>; otherwise call <var>verifyAndReport</var> with
+       <var>earlyResponse</var>.</p></li>
+      </ol>
+     </li>
+
+     <li><p><span data-x="preload a resource">Preload</span> <var>request</var> with the following
+     steps given <span data-x="concept-response">res</span>: set <var>unsafeEndTime</var> to the
+     <span>unsafe shared current time</span> and call <var>processResponse</var> with
+     <var>res</var>.</p></li>
+    </ol>
+   </li>
+
+   <li><p>Return <var>uncommittedPreloads</var>.</p></li>
+
+  </ol>
+
+  <p>To <dfn>process link headers</dfn> given a <code>Document</code> <var>doc</var>,
+  a <span data-x="concept-response">response</span> <var>response</var>, and a
+  "<code data-x="">pre-media</code>" or "<code data-x="">media</code>" <var>phase</var>:</p>
+
+  <ol>
+   <li><p>Let <var>links</var> be the result of
+   <span data-x="extract link headers">extracting link headers</span> from <var>response</var>'s
+   <span data-x="concept-response-header-list">header list</span>.</p></li>
+
+   <li>
+    <p><span data-x="list iterate">For each</span> <var>linkObject</var> in <var>links</var>:</p>
+
+    <ol>
      <li><p>Let <var>attribs</var> be
      <var>linkObject</var>["<code data-x="">target_attributes</code>"].</p></li>
 
@@ -25735,6 +25907,46 @@ document.body.appendChild(wbr);</code></pre>
    <li><p>Return true.</p></li>
   </ol>
 
+  <p>To <dfn>preload a resource</dfn> given a <span data-x="concept-request">request</span>
+  <var>request</var> and <var>processResponse</var>, which is an algorithm accepting a
+  <span data-x="concept-response">response</span>:
+  <!--FETCH--><span data-x="concept-fetch">fetch</span> <var>request</var>, with <i
+  data-x="processResponseConsumeBody">processResponseConsumeBody</i> set to the following steps
+  given <span data-x="concept-response">response</span> <var>response</var> and null or <span>byte
+  sequence</span> <var>bytesOrNull</var>:</p>
+
+  <ol>
+   <li>
+    <p>If <var>bytesOrNull</var> is a <span>byte sequence</span>, then set <var>response</var>'s
+    <span data-x="concept-response-body">body</span> to the first return value of <span
+    data-x="body safely extract">safely extracting</span> <var>bytesOrNull</var>.</p>
+
+    <p class=note>By using <i data-x="processResponseConsumeBody">processResponseConsumeBody</i>,
+    we have <span data-x="body safely extract">extracted</span> the entire <span
+    data-x="concept-response-body">body</span>. This is necessary to ensure the preloader loads
+    the entire body from the network, regardless of whether the preload will be consumed (which
+    is uncertain at this point). This step then resets the request's body to a new body
+    containing the same bytes, so that other specifications can read from it at the time of
+    actual consumption, despite us having already done so once.</p>
+   </li>
+
+   <li><p>Otherwise, set <var>response</var> to a <span>network error</span>.</p></li>
+
+   <li><p>Call <var>processResponse</var> with <var>response</var></p>
+  </ol>
+
+
+  <p>To <dfn>create a preload key</dfn> for a <span data-x="concept-request">request</span>
+  <var>request</var>, return a new <span>preload key</span> whose <span data-x="preload
+  URL">URL</span> is <var>request</var>'s <span data-x="concept-request-url">URL</span>, <span
+  data-x="preload destination">destination</span> is <var>request</var>'s <span
+  data-x="concept-request-destination">destination</span>, <span data-x="preload integrity
+  metadata">integrity metadata</span> is <var>request</var>'s <span
+  data-x="concept-request-integrity-metadata">integrity metadata</span>, <span data-x="preload
+  mode">mode</span> is <var>request</var>'s <span data-x="concept-request-mode">mode</span>, and
+  <span data-x="preload credentials mode">credentials mode</span> is <var>request</var>'s <span
+  data-x="concept-request-credentials-mode">credentials mode</span>.</p>
+
   <p>The <span>fetch and process the linked resource</span> steps for this type of linked resource,
   given a <code>link</code> element <var>el</var>, are:</p>
 
@@ -25770,15 +25982,9 @@ document.body.appendChild(wbr);</code></pre>
     </ol>
    </li>
 
-   <li><p>Let <var>preloadKey</var> be a <span>preload key</span> whose <span data-x="preload
-   URL">URL</span> is <var>request</var>'s <span data-x="concept-request-url">URL</span>, <span
-   data-x="preload destination">destination</span> is <var>request</var>'s <span
-   data-x="concept-request-destination">destination</span>, <span data-x="preload integrity
-   metadata">integrity metadata</span> is <var>request</var>'s <span
-   data-x="concept-request-integrity-metadata">integrity metadata</span>, <span data-x="preload
-   mode">mode</span> is <var>request</var>'s <span data-x="concept-request-mode">mode</span>, and
-   <span data-x="preload credentials mode">credentials mode</span> is <var>request</var>'s <span
-   data-x="concept-request-credentials-mode">credentials mode</span>.</p></li>
+   <li><p>Let <var>preloadKey</var> be the result of
+   <span data-x="create a preload key">creating a preload key</span> given
+   <var>request</var>.</p></li>
 
    <li><p>Let <var>preloadEntry</var> be a new <span>preload entry</span>.</p></li>
 
@@ -25789,35 +25995,12 @@ document.body.appendChild(wbr);</code></pre>
    on <var>el</var>.</p></li>
 
    <li>
-    <p><span data-x="concept-fetch">Fetch</span> <var>request</var>, with <i
-    data-x="processResponseConsumeBody">processResponseConsumeBody</i> set to the following steps
-    given <span data-x="concept-response">response</span> <var>response</var> and null or <span>byte
-    sequence</span> <var>bytesOrNull</var>:</p>
+    <p><span data-x="preload a resource">Preload</span> <var>request</var>, with the following
+    steps given <span data-x="concept-response">response</span> <var>response</var>:</p>
 
     <ol>
-     <li>
-      <p>If <var>bytesOrNull</var> is a <span>byte sequence</span>, then set <var>response</var>'s
-      <span data-x="concept-response-body">body</span> to the first return value of <span
-      data-x="body safely extract">safely extracting</span> <var>bytesOrNull</var>.</p>
-
-      <p class=note>By using <i data-x="processResponseConsumeBody">processResponseConsumeBody</i>,
-      we have <span data-x="body safely extract">extracted</span> the entire <span
-      data-x="concept-response-body">body</span>. This is necessary to ensure the preloader loads
-      the entire body from the network, regardless of whether the preload will be consumed (which
-      is uncertain at this point). This step then resets the request's body to a new body
-      containing the same bytes, so that other specifications can read from it at the time of
-      actual consumption, despite us having already done so once.</p>
-     </li>
-
-     <li><p>Otherwise, set <var>response</var> to a <span>network error</span>.</p></li>
-
      <li><p><span>Finalize and report timing</span> with <var>response</var>, given <var>el</var>'s
      <span>relevant global object</span> and "<code data-x="">link</code>".</p></li>
-
-     <li><p><span data-x="concept-event-fire">Fire an event</span> named <code
-     data-x="event-load">load</code> at <var>el</var>.</p></li>
-
-     <li><p><span>Unblock rendering</span> on <var>el</var>.</p></li>
 
      <li><p>If <var>preloadEntry</var>'s <span data-x="preload on response available">on response
      available</span> is null, then set <var>preloadEntry</var>'s <span data-x="preload
@@ -25825,6 +26008,10 @@ document.body.appendChild(wbr);</code></pre>
 
      <li><p>Otherwise, call <var>preloadEntry</var>'s <span data-x="preload on response
      available">on response available</span> with <var>response</var>.</p></li>
+     <li><p><span data-x="concept-event-fire">Fire an event</span> named <code
+     data-x="event-load">load</code> at <var>el</var>.</p></li>
+
+     <li><p><span>Unblock rendering</span> on <var>el</var>.</p></li>
     </ol>
    </li>
   </ol>
@@ -87625,6 +87812,10 @@ interface <dfn interface>Location</dfn> { // but see also <a href="#the-location
    <dt><dfn data-x="navigation-params-unsafe-start-time">unsafe start time</dfn></dt>
    <dd>a number, representing a value of the <span>unsafe shared current time</span> when the
    navigation has started</dd>
+
+   <dt><dfn data-x="navigation-params-uncommitted-preloads">uncommitted preloads</dfn></dt>
+   <dd>null or a <span>list</span> of algorithms representing early preloaded links, to be committed
+   once the <code>document</code> has been created</dd>
   </dl>
 
   <p class="note">Once a <span>navigation params</span> struct is created, this standard does not
@@ -87927,9 +88118,10 @@ interface <dfn interface>Location</dfn> { // but see also <a href="#the-location
        data-x="navigation-params-browsing-context">browsing context</span> is
        <var>browsingContext</var>, <span data-x="navigation-params-hh">history handling</span> is
        <var>historyHandling</var>, <span data-x="navigation-params-unsafe-start-time">unsafe start
-       time</span> is <var>unsafeNavigationStartTime</var>, and <span
+       time</span> is <var>unsafeNavigationStartTime</var>, <span
        data-x="navigation-params-has-cross-origin-redirects">has cross-origin redirects</span> is
-       false.</p></li>
+       false, and <span
+       data-x="navigation-params-uncommitted-preloads">uncommitted preloads</span> is null.</p></li>
 
        <li><p>Run <span>process a navigate response</span> with <var>navigationType</var>,
        <var>allowedToDownload</var>, <var>hasTransientActivation</var>, and
@@ -87987,9 +88179,10 @@ interface <dfn interface>Location</dfn> { // but see also <a href="#the-location
        <var>browsingContext</var>, <span data-x="navigation-params-hh">history handling</span> is
        <var>historyHandling</var>,
        <span data-x="navigation-params-unsafe-start-time">unsafe start time</span> is
-       <var>unsafeNavigationStartTime</var>, and <span
+       <var>unsafeNavigationStartTime</var>, <span
        data-x="navigation-params-has-cross-origin-redirects">has cross-origin redirects</span> is
-       false.</p></li>
+       false, and <span
+       data-x="navigation-params-uncommitted-preloads">uncommitted preloads</span> is null.</p></li>
 
        <li><p>Run <span>process a navigate response</span> with <var>navigationType</var>,
        <var>allowedToDownload</var>, <var>hasTransientActivation</var>, and
@@ -88103,6 +88296,8 @@ interface <dfn interface>Location</dfn> { // but see also <a href="#the-location
 
    <li><p>Let <var>hasCrossOriginRedirects</var> be false.</p></li>
 
+   <li><p>Let <var>uncommittedPreloads</var> be null.</p></li>
+
    <li>
     <p>While true:</p>
 
@@ -88187,8 +88382,16 @@ interface <dfn interface>Location</dfn> { // but see also <a href="#the-location
       <p>Otherwise:</p>
 
       <ol>
-       <li><p>If <var>response</var> is null, <!--FETCH--><span
-       data-x="concept-fetch">fetch</span> <var>request</var>.</p></li>
+       <li>
+        <p>If <var>response</var> is null, <!--FETCH--><span
+        data-x="concept-fetch">fetch</span> <var>request</var>, with
+        <i>processEarlyHintsResponse</i> set to the following step given a
+        <span data-x="concept-response">response</span> <var>earlyResponse</var>: If
+        <var>uncommittedPreloads</var> is null, then set <var>uncommittedPreloads</var> to the result
+        of <span data-x="process early hint headers">processing early hints headers</span> given
+        <var>earlyResponse</var> and <var>request</var>'s
+        <span data-x="concept-request-reserved-client">reserved client</span>.</p>
+       </li>
 
        <li><p>Otherwise, perform <span>HTTP-redirect fetch</span> using
        <var>request</var> and <var>response</var>.</p></li>
@@ -88326,9 +88529,11 @@ interface <dfn interface>Location</dfn> { // but see also <a href="#the-location
    <var>browsingContext</var>, <span data-x="navigation-params-hh">history handling</span> is
    <var>historyHandling</var>,
    <span data-x="navigation-params-unsafe-start-time">unsafe start time</span> is
-   <var>unsafeNavigationStartTime</var>, and
+   <var>unsafeNavigationStartTime</var>,
    <span data-x="navigation-params-has-cross-origin-redirects">has cross-origin redirects</span> is
-   <var>hasCrossOriginRedirects</var>.</p></li>
+   <var>hasCrossOriginRedirects</var>, and
+   <span data-x="navigation-params-uncommitted-preloads">uncommitted preloads</span> is
+   <var>uncommittedPreloadds</var>.</p></li>
 
    <li><p>Run <span>process a navigate response</span> with <var>navigationType</var>,
    <var>allowedToDownload</var>, <var>hasTransientActivation</var>, and
@@ -88916,6 +89121,11 @@ interface <dfn interface>Location</dfn> { // but see also <a href="#the-location
     headers. This is tracked as <a
     href="https://github.com/whatwg/html/issues/2900">issue #2900</a>.</p>
    </li>
+
+   <li><p><span data-x="map iterate">For each</span> <var>commit</var> in
+   <var>navigationParams</var>'s
+   <span data-x="navigation-params-uncommitted-preloads">uncommitted preloads</span>,
+   call <var>commit</var> given <var>document</var>.</p>
 
    <li><p><span>Process link headers</span> given <var>document</var>, <var>navigationParams</var>'s
    <span data-x="navigation-params-response">response</span>, and
