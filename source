@@ -88330,6 +88330,8 @@ interface <dfn interface>Location</dfn> { // but see also <a href="#the-location
 
        <li><p>Set <var>request</var>'s <span data-x="concept-request-reserved-client">reserved
        client</span> to null.</p></li>
+
+       <li><p>Set <var>uncommittedPreloads</var> to null.</p></li>
       </ol>
      </li>
 
