@@ -14433,7 +14433,7 @@ interface <dfn interface>HTMLLinkElement</dfn> : <span>HTMLElement</span> {
 
   <ol>
    <li><p>Let <var>links</var> be the result of
-   <span data-x="extract link headers">extracting link headers</span> from <var>response</var>'s
+   <span data-x="extract links from headers">extracting links</span> from <var>response</var>'s
    <span data-x="concept-response-header-list">header list</span>.</p></li>
 
    <li>
