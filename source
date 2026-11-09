@@ -115121,6 +115121,10 @@ new PaymentRequest(&hellip;); // Allowed to use
      "<code data-x="blocking-parser-aborted">parser-aborted</code>".</p></li>
     </ol>
    </li>
+
+   <li><p><span data-x="list iterate">For each</span> <span>HTML parser</span> <var>parser</var>
+   whose <span>script target document</span> is <var>document</var> and whose <span>document aborted
+   steps</span> are non-null, run <var>parser</var>'s <span>document aborted steps</span>.</p></li>
   </ol>
   </div>
 
@@ -127693,7 +127697,8 @@ enum <dfn enum>DOMParserSupportedType</dfn> {
   data-x="dom-SetHTMLUnsafeOptions-runScripts">runScripts</code> is true, streamed scripts run in
   the live document rather than the stream's parser (so <code
   data-x="dom-document-write">document.write()</code> targets the live document) and are not blocked
-  by style sheets.</p>
+  by style sheets, and the stream errors with an <span>"<code>AbortError</code>"</span>
+  <code>DOMException</code> if that document is <span data-x="abort a document">aborted</span>.</p>
 
   <p class="warning">By default, the methods with an <code data-x="">Unsafe</code> suffix perform no
   sanitization to remove potentially-dangerous elements and attributes like <code>script</code> or
@@ -128120,19 +128125,12 @@ enum <dfn enum>DOMParserSupportedType</dfn> {
    <li><p>Let <var>writeError</var> be null.</p></li>
 
    <li>
-    <p>If <var>referenceChild</var> is non-null, then set <var>parser</var>'s <span>invalid
-    reference child steps</span> to the following steps given a <code>Node</code>
-    <var>child</var>:</p>
+    <p>Let <var>failWithError</var> be the following steps given an <var>error</var>:</p>
 
     <ol>
-     <li><p>If <var>child</var> is not <var>referenceChild</var>, or <var>referenceChild</var>'s
-     <span>parent</span> is <var>target</var>, then return.</p></li>
-
      <li><p>Set <var>parser</var>'s <span>invalid reference child steps</span> to null.</p></li>
 
-     <li><p>Let <var>error</var> be a <span>new</span>
-     <span>"<code>HierarchyRequestError</code>"</span> <code>DOMException</code> created in
-     <var>realm</var>.</p></li>
+     <li><p>Set <var>parser</var>'s <span>document aborted steps</span> to null.</p></li>
 
      <li><p>Set <var>writeError</var> to <var>error</var>.</p></li>
 
@@ -128144,6 +128142,31 @@ enum <dfn enum>DOMParserSupportedType</dfn> {
      set <var>parser</var>'s <span>fragment parser close promise</span> to null.</p></li>
 
      <li><p><span data-x="abort a fragment parser">Abort</span> <var>parser</var>.</p></li>
+    </ol>
+   </li>
+
+   <li>
+    <p>If <var>referenceChild</var> is non-null, then set <var>parser</var>'s <span>invalid
+    reference child steps</span> to the following steps given a <code>Node</code>
+    <var>child</var>:</p>
+
+    <ol>
+     <li><p>If <var>child</var> is not <var>referenceChild</var>, or <var>referenceChild</var>'s
+     <span>parent</span> is <var>target</var>, then return.</p></li>
+
+     <li><p>Run <var>failWithError</var> given a <span>new</span>
+     <span>"<code>HierarchyRequestError</code>"</span> <code>DOMException</code> created in
+     <var>realm</var>.</p></li>
+    </ol>
+   </li>
+
+   <li>
+    <p>Set <var>parser</var>'s <span>document aborted steps</span> to the following steps:</p>
+
+    <ol>
+     <li><p>Run <var>failWithError</var> given a <span>new</span>
+     <span>"<code>AbortError</code>"</span> <code>DOMException</code> created in
+     <var>realm</var>.</p></li>
     </ol>
    </li>
 
@@ -144162,6 +144185,10 @@ dictionary <dfn dictionary>StorageEventInit</dfn> : <span>EventInit</span> {
   <span>adjusted insertion location</span> or <span>stream HTML</span> detects that it is no longer
   a <span data-x="concept-tree-child">child</span> of the <span
   data-x="insertion-location-target-parent">target parent</span>.</p>
+
+  <p>An algorithm-or-null <dfn>document aborted steps</dfn>, initially null. When non-null, they are
+  run when the parser's <span>script target document</span> is <span data-x="abort a
+  document">aborted</span>.</p>
 
 
   <h4><dfn>Tokenization</dfn></h4>
