@@ -87759,6 +87759,26 @@ dictionary <dfn dictionary>CommandEventInit</dfn> : <span>EventInit</span> {
 
     <ol>
      <li>
+      <p>If <var>entry</var> is a <span>focusable area</span>:</p>
+
+      <ol>
+       <li><p>Let <var>oldDocument</var> be <var>entry</var>'s <span>DOM anchor</span>'s <span>node
+       document</span>.</p></li>
+
+       <li><p>Set <var>oldDocument</var>'s <span>relevant global object</span>'s <span
+       data-x="window-navigation-api">navigation API</span>'s <span>focus changed during ongoing
+       navigation</span> to true.</p></li>
+
+       <li><p>If <var>oldDocument</var>'s <span>node navigable</span> is not null, then <span
+       data-x="list iterate">for each</span> <var>oldAncestorNavigable</var> of
+       <var>oldDocument</var>'s <span>ancestor navigables</span>: set
+       <var>oldAncestorNavigable</var>'s <span data-x="nav-document">active document</span>'s
+       <span>relevant global object</span>'s <span data-x="window-navigation-api">navigation
+       API</span>'s <span>focus changed during ongoing navigation</span> to true.</p></li>
+      </ol>
+     </li>
+
+     <li>
       <p>If <var>entry</var> is an <code>input</code> element, and the <code
       data-x="event-change">change</code> event <span data-x="concept-input-apply">applies</span>
       to the element, and the element does not have a defined <span>activation behavior</span>, and
@@ -87820,11 +87840,20 @@ dictionary <dfn dictionary>CommandEventInit</dfn> : <span>EventInit</span> {
        <li><p>Let <var>document</var> be <var>entry</var>'s <span>DOM anchor</span>'s <span>node
        document</span>.</p></li>
 
-       <li><p>If <var>document</var>'s <span>focused area of the document</span> is not
-       <var>entry</var>:</p>
+       <li>
+        <p>If <var>document</var>'s <span>focused area of the document</span> is not
+        <var>entry</var> or <var>old chain</var> is not <span data-x="list is
+        empty">empty</span>:</p>
 
         <ol>
          <li><p>Set <var>document</var>'s <span>relevant global object</span>'s <span
+         data-x="window-navigation-api">navigation API</span>'s <span>focus changed during ongoing
+         navigation</span> to true.</p></li>
+
+         <li><p>If <var>document</var>'s <span>node navigable</span> is not null, then <span
+         data-x="list iterate">for each</span> <var>ancestorNavigable</var> of <var>document</var>'s
+         <span>ancestor navigables</span>: set <var>ancestorNavigable</var>'s <span
+         data-x="nav-document">active document</span>'s <span>relevant global object</span>'s <span
          data-x="window-navigation-api">navigation API</span>'s <span>focus changed during ongoing
          navigation</span> to true.</p></li>
 
