@@ -71312,9 +71312,11 @@ callback <dfn callback>BlobCallback</dfn> = undefined (<span>Blob</span>? blob);
          the WebGL specifications' <i>Context Creation</i> sections, given <var>settings</var>.
          <ref>WEBGL</ref></p></li>
 
-         <li><p>If <var>context</var> is null, then return null; otherwise set <span>this</span>'s
-         <span data-x="concept-canvas-context-mode">context mode</span> to <span
-         data-x="concept-canvas-webgl">webgl</span> or <span
+         <li><p>If <var>context</var> is null, then return null.</p></li>
+
+         <li><p>Set <span>this</span>'s <span data-x="concept-canvas-context-mode">context
+         mode</span> to <span data-x="concept-canvas-webgl">webgl</span> if <var>contextId</var> is
+         "<code data-x="canvas-context-webgl">webgl</code>"; otherwise <span
          data-x="concept-canvas-webgl2">webgl2</span>.</p></li>
 
          <li><p>Return <var>context</var>.</p></li>
@@ -71324,8 +71326,13 @@ callback <dfn callback>BlobCallback</dfn> = undefined (<span>Blob</span>? blob);
        <td>
         Return null.
        <td>
-        Return the same object as was returned the last time the method was invoked with this same
-        first argument.
+        If <span>this</span>'s <span data-x="concept-canvas-context-mode">context mode</span> is
+        <span data-x="concept-canvas-webgl">webgl</span> and <var>contextId</var> is "<code
+        data-x="canvas-context-webgl">webgl</code>", or if <span>this</span>'s <span
+        data-x="concept-canvas-context-mode">context mode</span> is <span
+        data-x="concept-canvas-webgl2">webgl2</span> and <var>contextId</var> is "<code
+        data-x="canvas-context-webgl2">webgl2</code>", then return the same object as was returned
+        the last time the method was invoked with this same first argument; otherwise return null.
        <td>
         Return null.
        <td>
@@ -77869,10 +77876,12 @@ interface <dfn interface>OffscreenCanvas</dfn> : <span>EventTarget</span> {
          WebGL specifications' <i>Context Creation</i> sections, given <var>settings</var>.
          <ref>WEBGL</ref></p></li>
 
-         <li><p>If <var>context</var> is null, then return null; otherwise set
-         <span>this</span>'s <span data-x="offscreencanvas-context-mode">context
-         mode</span> to <span data-x="offscreencanvas-context-webgl">webgl</span> or <span
-         data-x="offscreencanvas-context-webgl2">webgl2</span>.</p></li>
+         <li><p>If <var>context</var> is null, then return null.</p></li>
+
+         <li><p>Set <span>this</span>'s <span data-x="offscreencanvas-context-mode">context
+         mode</span> to <span data-x="offscreencanvas-context-webgl">webgl</span> if
+         <var>contextId</var> is "<code data-x="offscreen-context-type-webgl">webgl</code>";
+         otherwise <span data-x="offscreencanvas-context-webgl2">webgl2</span>.</p></li>
 
          <li><p>Return <var>context</var>.</p></li>
         </ol>
@@ -77881,8 +77890,14 @@ interface <dfn interface>OffscreenCanvas</dfn> : <span>EventTarget</span> {
        <td>
         Return null.
        <td>
-        Return the same value as was returned the last time the method was invoked with this same
-        first argument.
+        If <span>this</span>'s <span data-x="offscreencanvas-context-mode">context mode</span> is
+        <span data-x="offscreencanvas-context-webgl">webgl</span> and <var>contextId</var> is
+        "<code data-x="offscreen-context-type-webgl">webgl</code>", or if <span>this</span>'s <span
+        data-x="offscreencanvas-context-mode">context mode</span> is <span
+        data-x="offscreencanvas-context-webgl2">webgl2</span> and <var>contextId</var> is "<code
+        data-x="offscreen-context-type-webgl2">webgl2</code>", then return the same value as was
+        returned the last time the method was invoked with this same first argument; otherwise
+        return null.
        <td>
         Return null.
        <td>
