@@ -71230,12 +71230,9 @@ callback <dfn callback>BlobCallback</dfn> = undefined (<span>Blob</span>? blob);
   method steps are:</p>
 
   <ol>
-   <li><p>Let <var>settings</var> be null.</p></li>
-
-   <li><p>If <span>this</span>'s <span data-x="concept-canvas-context-mode">context mode</span> is
-   <span data-x="concept-canvas-none">none</span>, then set <var>settings</var> to the result of
-   <span data-x="convert rendering context options">converting rendering context options</span>
-   given <var>contextId</var> and <var>options</var>.</p></li>
+   <li><p>Let <var>settings</var> be the result of <span data-x="convert rendering context
+   options">converting rendering context options</span> given <var>contextId</var> and
+   <var>options</var>.</p></li>
 
    <li>
     <p>Run the steps in the cell of the following table whose column header matches
@@ -77787,12 +77784,9 @@ interface <dfn interface>OffscreenCanvas</dfn> : <span>EventTarget</span> {
   <var>options</var>)</code></dfn> method steps are:</p>
 
   <ol>
-   <li><p>Let <var>settings</var> be null.</p></li>
-
-   <li><p>If <span>this</span>'s <span data-x="offscreencanvas-context-mode">context mode</span> is
-   <span data-x="offscreencanvas-context-none">none</span>, then set <var>settings</var> to the
-   result of <span data-x="convert rendering context options">converting rendering context
-   options</span> given <var>contextId</var> and <var>options</var>.</p></li>
+   <li><p>Let <var>settings</var> be the result of <span data-x="convert rendering context
+   options">converting rendering context options</span> given <var>contextId</var> and
+   <var>options</var>.</p></li>
 
    <li>
     <p>Run the steps in the cell of the following table whose column header matches
