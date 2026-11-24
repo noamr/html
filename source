@@ -108930,6 +108930,10 @@ location.href = '#foo';</code></pre>
     traversed to.</p>
    </li>
 
+   <li><p>If <var>targetNavigable</var>'s <span>ongoing navigation</span> equals
+   <var>navigationId</var>, then set <var>targetNavigable</var>'s <span>ongoing navigation</span>
+   to null.</p></li>
+
    <li><p><span data-x="tn-append-session-history-traversal-steps">Append session history traversal
    steps</span> to <var>targetNavigable</var>'s <span data-x="nav-traversable">traversable navigable</span>
    to <span>finalize a cross-document navigation</span> with <var>targetNavigable</var>,
@@ -110423,6 +110427,10 @@ location.href = '#foo';</code></pre>
        </li>
       </ol>
      </li>
+
+     <li><p>If <var>navigable</var>'s <span>ongoing navigation</span> equals
+     <var>navigationId</var>, then set <var>navigable</var>'s <span>ongoing navigation</span> to
+     null.</p></li>
 
      <li><p>Run <var>completionSteps</var>.</p></li>
     </ol>
@@ -111950,11 +111958,6 @@ location.href = '#foo';</code></pre>
        data-x="dom-NavigationType-traverse">traverse</code>" or "<code
        data-x="dom-NavigationType-reload">reload</code>", then set <var>navigable</var>'s
        <span>ongoing navigation</span> to null.</p></li>
-
-       <li><p>Otherwise, if <var>changingNavigableContinuation</var>'s <span
-       data-x="changing-nav-continuation-update-only">update-only</span> is false, and
-       <var>navigable</var>'s <span>ongoing navigation</span> is a <span>navigation ID</span>, then
-       set <var>navigable</var>'s <span>ongoing navigation</span> to null.</p></li>
 
        <li><p>Let <var>previousEntry</var> be <var>navigable</var>'s <span
        data-x="nav-active-history-entry">active session history entry</span>.</p></li>
