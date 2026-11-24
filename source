@@ -109805,9 +109805,11 @@ location.href = '#foo';</code></pre>
   null. It is used to track navigation aborting and to prevent any navigations from taking place
   during <span data-x="apply the traverse history step">traversal</span>.</p>
 
-  <p class="note">The <span>ongoing navigation</span> is only ever read or written from <span
-  data-x="concept-task">tasks</span> on the <span>event loop</span> of the <span>navigable</span>'s
-  <span data-x="nav-window">active window</span>.</p>
+  <p class="note">Aside from synchronous cross-origin or <span>in parallel</span> invocations of
+  <span>navigate</span> (and <span>navigate to a fragment</span>), the <span>ongoing
+  navigation</span> is only ever read or written from <span data-x="concept-task">tasks</span> on
+  the <span>event loop</span> of the <span>navigable</span>'s <span data-x="nav-window">active
+  window</span>.</p>
 
   <div algorithm>
   <p>To <dfn>set the ongoing navigation</dfn> for a <span>navigable</span> <var>navigable</var> to
