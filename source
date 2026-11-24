@@ -103954,14 +103954,14 @@ interface <dfn interface>NavigationDestination</dfn> {
    state</span> is not "<code data-x="">intercepted</code>", then <span
    data-x="NavigateEvent-finish">finish</span> <var>event</var> given false.</p></li>
 
-   <li><p><span data-x="Abort a NavigateEvent">Abort</span> <var>event</var> given
-   <var>reason</var>.</p></li>
-
    <li><p>If <var>event</var>'s <span data-x="concept-NavigateEvent-interception-state">interception
    state</span> is not "<code data-x="">none</code>", and <var>event</var>'s <span>relevant global
    object</span>'s <span data-x="window navigable">navigable</span>'s <span>ongoing
    navigation</span> is a <span>navigation ID</span>, then set that <span>navigable</span>'s
    <span>ongoing navigation</span> to null.</p></li>
+
+   <li><p><span data-x="Abort a NavigateEvent">Abort</span> <var>event</var> given
+   <var>reason</var>.</p></li>
   </ol>
   </div>
 
