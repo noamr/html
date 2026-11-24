@@ -109617,15 +109617,6 @@ location.href = '#foo';</code></pre>
 
         <ol>
          <li>
-          <p><span>Set the ongoing navigation</span> for <var>traversable</var> to "<code
-          data-x="">traversal</code>".</p>
-
-          <p class="note">Marking before the <code data-x="event-navigate">navigate</code> event
-          fires means this can abort a superseded navigation's <code
-          data-x="event-navigate">navigate</code> event, but never the traversal's own.</p>
-         </li>
-
-         <li>
           <p>If <var>needsBeforeunload</var> is true:</p>
 
           <ol>
@@ -109644,8 +109635,13 @@ location.href = '#foo';</code></pre>
          </li>
 
          <li><p>If <var>finalStatus</var> is "<code data-x="">canceled-by-beforeunload</code>", then
-         set <var>traversable</var>'s <span>ongoing navigation</span> to null, set
-         <var>eventsFired</var> to true, and abort these steps.</p></li>
+         set <var>eventsFired</var> to true and abort these steps.</p></li>
+
+         <li><p>Let <var>navigationId</var> be the result of <span>generating a random
+         UUID</span>.</p></li>
+
+         <li><p><span>Set the ongoing navigation</span> for <var>traversable</var> to
+         <var>navigationId</var>.</p></li>
 
          <li><p>Let <var>navigation</var> be <var>traversable</var>'s <span
          data-x="nav-window">active window</span>'s <span data-x="window-navigation-api">navigation
@@ -109656,9 +109652,19 @@ location.href = '#foo';</code></pre>
          event</span> at <var>navigation</var> given <var>targetEntry</var> and
          <var>userInvolvementForNavigateEvent</var>.</p></li>
 
-         <li><p>If <var>navigateEventResult</var> is false, then set <var>finalStatus</var> to
-         "<code data-x="">canceled-by-navigate</code>" and set <var>traversable</var>'s
-         <span>ongoing navigation</span> to null.</p></li>
+         <li>
+          <p>If <var>navigateEventResult</var> is false:</p>
+
+          <ol>
+           <li><p>Set <var>finalStatus</var> to "<code
+           data-x="">canceled-by-navigate</code>".</p></li>
+
+           <li><p>If <var>navigation</var>'s <span>ongoing <code
+           data-x="event-navigate">navigate</code> event</span> is null and
+           <var>traversable</var>'s <span>ongoing navigation</span> is <var>navigationId</var>, then
+           set <var>traversable</var>'s <span>ongoing navigation</span> to null.</p></li>
+          </ol>
+         </li>
 
          <li><p>Set <var>eventsFired</var> to true.</p></li>
         </ol>
@@ -109700,15 +109706,6 @@ location.href = '#foo';</code></pre>
    </li>
 
    <li><p>Wait for <var>completedTasks</var> to be <var>totalTasks</var>.</p></li>
-
-   <li>
-    <p>If <var>traversable</var> was given, and <var>finalStatus</var> is not "<code
-    data-x="">continue</code>", then <span>queue a global task</span> on the <span>navigation and
-    traversal task source</span> given <var>traversable</var>'s <span data-x="nav-window">active
-    window</span> to run these steps: if <var>traversable</var>'s <span>ongoing navigation</span> is
-    "<code data-x="">traversal</code>", then set <var>traversable</var>'s <span>ongoing
-    navigation</span> to null.</p>
-   </li>
 
    <li><p>Return <var>finalStatus</var>.</p></li>
   </ol>
@@ -109853,11 +109850,11 @@ location.href = '#foo';</code></pre>
      <li><p>If <var>navigationAPIState</var> is not null, then set
      <var>destinationNavigationAPIState</var> to <var>navigationAPIState</var>.</p></li>
 
-     <li><p>Let <var>wasTraversing</var> be true if <var>navigable</var>'s <span>ongoing
-     navigation</span> is "<code data-x="">traversal</code>"; otherwise false.</p></li>
+     <li><p>Let <var>navigationId</var> be the result of <span>generating a random
+     UUID</span>.</p></li>
 
-     <li><p><span>Set the ongoing navigation</span> for <var>navigable</var> to "<code
-     data-x="">traversal</code>".</p></li>
+     <li><p><span>Set the ongoing navigation</span> for <var>navigable</var> to
+     <var>navigationId</var>.</p></li>
 
      <li><p>Let <var>continue</var> be the result of <span data-x="fire a push/replace/reload
      navigate event">firing a push/replace/reload <code data-x="event-navigate">navigate</code>
@@ -109878,8 +109875,10 @@ location.href = '#foo';</code></pre>
       <p>If <var>continue</var> is false:</p>
 
       <ol>
-       <li><p>If <var>wasTraversing</var> is false, then set <var>navigable</var>'s <span>ongoing
-       navigation</span> to null.</p></li>
+       <li><p>If <var>navigation</var>'s <span>ongoing <code
+       data-x="event-navigate">navigate</code> event</span> is null and <var>navigable</var>'s
+       <span>ongoing navigation</span> is <var>navigationId</var>, then set
+       <var>navigable</var>'s <span>ongoing navigation</span> to null.</p></li>
 
        <li><p>Return.</p></li>
       </ol>
@@ -111948,7 +111947,8 @@ location.href = '#foo';</code></pre>
       <ol>
        <li><p>If <var>navigationType</var> is "<code
        data-x="dom-NavigationType-traverse">traverse</code>" or "<code
-       data-x="dom-NavigationType-reload">reload</code>", then set <var>navigable</var>'s
+       data-x="dom-NavigationType-reload">reload</code>", and <var>navigable</var>'s <span>ongoing
+       navigation</span> is "<code data-x="">traversal</code>", then set <var>navigable</var>'s
        <span>ongoing navigation</span> to null.</p></li>
 
        <li><p>Otherwise, if <var>changingNavigableContinuation</var>'s <span
